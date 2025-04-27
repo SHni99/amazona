@@ -1,0 +1,281 @@
+# Kubernetes manifests for Amazona microservices
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: amazona
+
+---
+# Secret for Product Service MongoDB URI
+apiVersion: v1
+kind: Secret
+metadata:
+  name: product-service-secret
+  namespace: amazona
+type: Opaque
+stringData:
+  MONGODB_URI: "mongodb+srv://davidni055:uKI9xFrUdC7NZji6@cluster-shopee.iff3vnf.mongodb.net/e-commerce?retryWrites=true&w=majority&appName=Cluster-shopee"
+
+---
+# Deployment & Service: product-service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+  namespace: amazona
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+      - name: product-service
+        image: product-service:1.0.0
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 4002
+        envFrom:
+        - secretRef:
+            name: product-service-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+  namespace: amazona
+spec:
+  selector:
+    app: product-service
+  ports:
+    - protocol: TCP
+      port: 4002
+      targetPort: 4002
+  type: ClusterIP
+
+---
+# Deployment & Service: user-service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: amazona
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+      - name: user-service
+        image: amazona-microservices-user-service:latest
+        ports:
+        - containerPort: 4001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: amazona
+spec:
+  selector:
+    app: user-service
+  ports:
+    - protocol: TCP
+      port: 4001
+      targetPort: 4001
+  type: ClusterIP
+
+---
+# Deployment & Service: order-service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: amazona
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+      - name: order-service
+        image: amazona-microservices-order-service:latest
+        ports:
+        - containerPort: 4003
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  namespace: amazona
+spec:
+  selector:
+    app: order-service
+  ports:
+    - protocol: TCP
+      port: 4003
+      targetPort: 4003
+  type: ClusterIP
+
+---
+# Deployment & Service: payment-service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: amazona
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+      - name: payment-service
+        image: amazona-microservices-payment-service:latest
+        ports:
+        - containerPort: 4004
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  namespace: amazona
+spec:
+  selector:
+    app: payment-service
+  ports:
+    - protocol: TCP
+      port: 4004
+      targetPort: 4004
+  type: ClusterIP
+
+---
+# Deployment & Service: inventory-service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-service
+  namespace: amazona
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-service
+  template:
+    metadata:
+      labels:
+        app: inventory-service
+    spec:
+      containers:
+      - name: inventory-service
+        image: amazona-microservices-inventory-service:latest
+        ports:
+        - containerPort: 4005
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service
+  namespace: amazona
+spec:
+  selector:
+    app: inventory-service
+  ports:
+    - protocol: TCP
+      port: 4005
+      targetPort: 4005
+  type: ClusterIP
+
+---
+# Deployment & Service: review-service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review-service
+  namespace: amazona
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review-service
+  template:
+    metadata:
+      labels:
+        app: review-service
+    spec:
+      containers:
+      - name: review-service
+        image: amazona-microservices-review-service:latest
+        ports:
+        - containerPort: 4006
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: review-service
+  namespace: amazona
+spec:
+  selector:
+    app: review-service
+  ports:
+    - protocol: TCP
+      port: 4006
+      targetPort: 4006
+  type: ClusterIP
+
+---
+# Deployment & Service: frontend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: amazona
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: amazona-microservices-frontend:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: amazona
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30001
+  type: NodePort

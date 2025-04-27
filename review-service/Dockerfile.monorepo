@@ -1,0 +1,15 @@
+FROM node:18-alpine
+WORKDIR /app
+
+# Copy package files and install dependencies
+COPY package.json yarn.lock ./
+RUN yarn install
+
+# Copy service source
+COPY review-service ./review-service
+
+# Set working directory to the service folder
+WORKDIR /app/review-service
+
+EXPOSE 4006
+CMD ["node", "index.js"]

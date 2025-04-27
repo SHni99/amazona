@@ -1,0 +1,15 @@
+FROM node:18-alpine
+WORKDIR /app
+
+# Copy package files and install dependencies
+COPY package.json yarn.lock ./
+RUN yarn install
+
+# Copy service source
+COPY order-service ./order-service
+
+# Set working directory to the service folder
+WORKDIR /app/order-service
+
+EXPOSE 4003
+CMD ["node", "index.js"]

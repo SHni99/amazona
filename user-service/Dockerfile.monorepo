@@ -1,0 +1,15 @@
+FROM node:18-alpine
+WORKDIR /app
+
+# Copy package files and install dependencies
+COPY package.json yarn.lock ./
+RUN yarn install
+
+# Copy service source
+COPY user-service ./user-service
+
+# Set working directory to the service folder
+WORKDIR /app/user-service
+
+EXPOSE 4001
+CMD ["node", "index.js"]

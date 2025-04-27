@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+  frontend:
+    image: amazona-microservices-frontend:latest
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile.monorepo
+      args: 
+        - REACT_APP_PRODUCT_SERVICE_URL=http://product-service:4002
+    ports:
+      - "3001:80"
+    depends_on:
+      - product-service
+  user-service:
+    build:
+      context: .
+      dockerfile: user-service/Dockerfile.monorepo
+    ports:
+      - "4001:4001"
+  product-service:
+    build:
+      context: .
+      dockerfile: product-service/Dockerfile.monorepo
+    ports:
+      - "4002:4002"
+  order-service:
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile.monorepo
+    ports:
+      - "4003:4003"
+  payment-service:
+    build:
+      context: .
+      dockerfile: payment-service/Dockerfile.monorepo
+    ports:
+      - "4004:4004"
+  inventory-service:
+    build:
+      context: .
+      dockerfile: inventory-service/Dockerfile.monorepo
+    ports:
+      - "4005:4005"
+  review-service:
+    build:
+      context: .
+      dockerfile: review-service/Dockerfile.monorepo
+    ports:
+      - "4006:4006"
